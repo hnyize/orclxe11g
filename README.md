@@ -1,59 +1,65 @@
 # oraxe11g
-oracle XE 11g base on wnameless/oracle-xe-11g
+oracle XE 11g base on MaksymBilenko/docker-oracle-xe-11g
 
 原说明：
-docker-oracle-xe-11g
-Oracle Express Edition 11g Release 2 on Ubuntu 18.04 LTS
+Installation
+docker pull sath89/oracle-xe-11g
+Run with 8080 and 1521 ports opened:
 
-This Dockerfile is a trusted build of Docker Registry.
+docker run -d -p 8080:8080 -p 1521:1521 sath89/oracle-xe-11g
+Run with data on host and reuse it:
 
-Installation(with Ubuntu 18.04)
-docker pull wnameless/oracle-xe-11g
-SSH server has been removed since 18.04, please use "docker exec" or 16.04 instead.
+docker run -d -p 8080:8080 -p 1521:1521 -v /my/oracle/data:/u01/app/oracle sath89/oracle-xe-11g
+Run with customization of processes, sessions, transactions This customization is needed on the database initialization stage. If you are using mounted folder with DB files this is not used:
 
-Installation(with Ubuntu 16.04)
-docker pull wnameless/oracle-xe-11g:16.04
-Quick Start
-Run with 1521 port opened:
+##Consider this formula before customizing:
+#processes=x
+#sessions=x*1.1+5
+#transactions=sessions*1.1
+docker run -d -p 8080:8080 -p 1521:1521 -v /my/oracle/data:/u01/app/oracle\
+-e processes=1000 \
+-e sessions=1105 \
+-e transactions=1215 \
+sath89/oracle-xe-11g
+Run with custom sys password:
 
-docker run -d -p 49161:1521 wnameless/oracle-xe-11g
-Run this, if you want the database to be connected remotely:
-
-docker run -d -p 49161:1521 -e ORACLE_ALLOW_REMOTE=true wnameless/oracle-xe-11g
-For performance concern, you may want to disable the disk asynch IO:
-
-docker run -d -p 49161:1521 -e ORACLE_DISABLE_ASYNCH_IO=true wnameless/oracle-xe-11g
-Enable XDB user with default password: xdb, run this:
-
-docker run -d -p 49161:1521 -e ORACLE_ENABLE_XDB=true wnameless/oracle-xe-11g
-For APEX user:
-
-docker run -d -p 49161:1521 -p 8080:8080 wnameless/oracle-xe-11g
-# Login http://localhost:8080/apex/apex_admin with following credential:
-username: ADMIN
-password: admin
-For latest APEX(18.1) user, please pull wnameless/oracle-xe-11g:18.04-apex first:
-
-docker run -d -p 49161:1521 -p 8080:8080 wnameless/oracle-xe-11g:18.04-apex
-# Login http://localhost:8080/apex/apex_admin with following credential:
-username: ADMIN
-password: Oracle_11g
-By default, the password verification is disable(password never expired)
+docker run -d -p 8080:8080 -p 1521:1521 -e DEFAULT_SYS_PASS=sYs-p@ssw0rd sath89/oracle-xe-11g
 Connect database with following setting:
 
 hostname: localhost
-port: 49161
+port: 1521
 sid: xe
 username: system
 password: oracle
-Password for SYS & SYSTEM
+Password for SYS & SYSTEM:
 
 oracle
-Support custom DB Initialization and running shell scripts
+Connect to Oracle Application Express web management console with following settings:
 
-# Dockerfile
-FROM wnameless/oracle-xe-11g
+http://localhost:8080/apex
+workspace: INTERNAL
+user: ADMIN
+password: oracle
+Apex upgrade up to v 5.*
 
-ADD init.sql /docker-entrypoint-initdb.d/
-ADD script.sh /docker-entrypoint-initdb.d/
-Running order is alphabetically.
+docker run -it --rm --volumes-from ${DB_CONTAINER_NAME} --link ${DB_CONTAINER_NAME}:oracle-database -e PASS=YourSYSPASS sath89/apex install
+Details could be found here: https://github.com/MaksymBilenko/docker-oracle-apex
+
+Auto import of sh sql and dmp files
+
+docker run -d -p 8080:8080 -p 1521:1521 -v /my/oracle/data:/u01/app/oracle -v /my/oracle/init/sh_sql_dmp_files:/docker-entrypoint-initdb.d sath89/oracle-xe-11g
+In case of using DMP imports dump file should be named like ${IMPORT_SCHEME_NAME}.dmp User credentials for imports are ${IMPORT_SCHEME_NAME}/${IMPORT_SCHEME_NAME}
+
+In case of any issues please post it here.
+
+CHANGELOG
+
+Added auto-import using volume /docker-entrypoint-initdb.d for *.sh *.sql *.dmp
+Fixed issue with reusable mounted data
+Fixed issue with ownership of mounted data folders
+Fixed issue with Gracefull shutdown of service
+Reduse size of image from 3.8G to 825Mb
+Database initialization moved out of the image build phase. Now database initializes at the containeer startup with no database files mounted
+Added database media reuse support outside of container
+Added graceful shutdown on containeer stop
+Removed sshd
