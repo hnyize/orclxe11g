@@ -38,5 +38,6 @@ ENV sessions 555
 ENV transactions 610
 
 ADD entrypoint.sh /
+RUN chmod 777 /*.sh
 ENTRYPOINT ["/entrypoint.sh"]
 CMD [""]
