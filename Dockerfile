@@ -12,6 +12,7 @@ ADD chkconfig /sbin/chkconfig
 ADD oracle-install.sh /oracle-install.sh
 ADD init.ora /
 ADD initXETemp.ora /
+RUN chmod +x /*.sh
 
 # Prepare to install Oracle
 RUN apt-get update && apt-get install -y -q libaio1 net-tools bc curl rlwrap && \
