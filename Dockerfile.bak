@@ -5,9 +5,6 @@ MAINTAINER hnyize
 # get rid of the message: "debconf: unable to initialize frontend: Dialog"
 ENV DEBIAN_FRONTEND noninteractive
 
-ADD oracle-xe_11.2.0-1.0_amd64.debaa /
-ADD oracle-xe_11.2.0-1.0_amd64.debab /
-ADD oracle-xe_11.2.0-1.0_amd64.debac /
 ADD chkconfig /sbin/chkconfig
 ADD oracle-install.sh /oracle-install.sh
 ADD init.ora /
