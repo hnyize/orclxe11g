@@ -1,5 +1,7 @@
 # oraxe11g
 oracle XE 11g base on MaksymBilenko/docker-oracle-xe-11g
+修改了字符集
+alter system set "_allow_level_without_connect_by" = true;
 
 原说明：
 Installation
