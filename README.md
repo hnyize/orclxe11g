@@ -1,7 +1,9 @@
 # oraxe11g
 oracle XE 11g base on MaksymBilenko/docker-oracle-xe-11g
-修改了字符集
-alter system set "_allow_level_without_connect_by" = true;
+
+1\修改了字符集为ZHS16GBK
+2\alter system set "_allow_level_without_connect_by" = true;
+3\增加了测试账号yize
 
 原说明：
 Installation
