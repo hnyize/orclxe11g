@@ -93,7 +93,7 @@ case "$1" in
 		/etc/init.d/oracle-xe start
 		
 		#add tablespace and user yize for test
-		echo  create tablespace yize datafile '/u01/app/oracle/oradata/yize.dbf' size 1000M autoextend on next 100M maxsize unlimited\; | su oracle -s /bin/bash -c "$ORACLE_HOME/bin/sqlplus -s / as sysdba" > /dev/null 2>&1
+		echo  create tablespace yize datafile \'/u01/app/oracle/oradata/yize.dbf\' size 1000M autoextend on next 100M maxsize unlimited\; | su oracle -s /bin/bash -c "$ORACLE_HOME/bin/sqlplus -s / as sysdba" > /dev/null 2>&1
 		echo  create user yize identified by yize default tablespace yize\; | su oracle -s /bin/bash -c "$ORACLE_HOME/bin/sqlplus -s / as sysdba" > /dev/null 2>&1
 		echo  grant connect,resource to yize\; | su oracle -s /bin/bash -c "$ORACLE_HOME/bin/sqlplus -s / as sysdba" > /dev/null 2>&1
 		echo  alter system enable restricted session\; | su oracle -s /bin/bash -c "$ORACLE_HOME/bin/sqlplus -s / as sysdba" > /dev/null 2>&1
